@@ -1,25 +1,18 @@
 import { readFileSync } from "fs";
-import { connect } from "mongoose";
+import mongoose from "mongoose";
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: "../.env" });
 
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import path from "path";
+
 import Tour from "../models/tourModel.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-const DB = process.env.DATABASE.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
-);
-
-connect(DB, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-}).then(() => console.log("DB connection successful!"));
+mongoose
+  .connect(process.env.DB)
+  .then(() => console.log("DB connection successful!"))
+  .catch((err) => console.log(err));
 
 // READ JSON FILE
 const tours = JSON.parse(
