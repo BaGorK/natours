@@ -28,6 +28,16 @@ export const getAllTours = async (req, res) => {
       query = query.sort('-createdAt'); // to sort the newest first | in descending order
     }
 
+    // FIELD LIMITING
+    if (req.query.fields) {
+      // /tours?fields=name,duration,price
+      // query = query.select('name duration price');  // select only these field names | aka = projecting
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
     // EXECUTE THE QUERY
     const tours = await query; // the we execute that query here and get the result
 
