@@ -43,10 +43,22 @@ class APIFeatures {
 
     return this;
   }
+
+  paginate() {
+    const page = Number(this.queryString.page) || 1;
+    const limit = Number(this.queryString.limit) || 100;
+
+    const skip = (page - 1) * limit;
+
+    this.query = this.query.skip(skip).limit(limit);
+
+    return this;
+  }
 }
 
 export const getAllTours = async (req, res) => {
   try {
+  /*
     // BUILD QUERY
     // 1) filtering
     const queryObj = { ...req.query };
@@ -95,10 +107,14 @@ export const getAllTours = async (req, res) => {
       const numTours = await Tour.countDocuments();
       if (skip >= numTours) throw new Error('This page does not exist');
     }
-
+*/
     // EXECUTE THE QUERY
-    const features = new APIFeatures(Tour.find(), req.query).filter();
-    const tours = await query; // the we execute that query here and get the result
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query; // the we execute that query here and get the result
 
     // SEND RESPONSE
     res.status(200).json({
