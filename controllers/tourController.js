@@ -160,19 +160,30 @@ export const deleteTour = async (req, res) => {
 
 export const getTourStats = async (req, res) => {
   try {
-    const stats = Tour.aggregate([
+    const stats = await Tour.aggregate([
       {
         $match: { ratingsAverage: { $gte: 4.5 } },
       },
       {
         $group: {
-          _id: null,
+          _id: '$difficulty',
+          numTours: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity' },
           avgRating: { $avg: '$ratingsAverage' },
           avgPrice: { $avg: '$price' },
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' },
         },
       },
+      {
+        $sort: { avgPrice: 1 },
+      },
+      /*
+      // we can match multiple times
+      {
+        $match: { _id: { $ne: 'easy' } }, // we take _id  filed from the previous group stage and filter out the easy | we do not consider the original tour doc here. We are working with the data that is coming from the previous stage. 
+      },
+      */
     ]);
 
     res.status(200).json({
@@ -181,6 +192,23 @@ export const getTourStats = async (req, res) => {
         stats,
       },
     });
+    /*z
+    // Response
+      {
+        "status": "success",
+        "data": {
+            "stats": [
+                {
+                    "_id": null,
+                    "avgRating": 4.783333333333334,
+                    "avgPrice": 1647,
+                    "minPrice": 397,
+                    "maxPrice": 2997
+                }
+            ]
+        }
+      }
+    */
   } catch (error) {
     res.status(404).json({
       status: 'fail',
