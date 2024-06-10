@@ -29,8 +29,8 @@ export const getAllTours = async (req, res) => {
 
     // Sorting
     if (req.query.sort) {
-      // /tours?sort=price,ratingsAverage
-      // sort = 'price ratingsAverage'
+      // /tours?sort=-price,ratingsAverage
+      // sort = '-price ratingsAverage'
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
     } else {
@@ -59,6 +59,7 @@ export const getAllTours = async (req, res) => {
       const numTours = await Tour.countDocuments();
       if (skip >= numTours) throw new Error('This page does not exist');
     }
+    const tours = await query; // the we execute that query here and get the result
 */
     // EXECUTE THE QUERY
     const features = new APIFeatures(Tour.find(), req.query)
@@ -156,3 +157,14 @@ export const deleteTour = async (req, res) => {
     });
   }
 };
+
+export const getTourStats = async (req, res) => {
+  try {
+    const stats = Tour.aggregate()
+  } catch (error) {
+     res.status(404).json({
+       status: 'fail',
+       message: error,
+     });
+  }
+}
