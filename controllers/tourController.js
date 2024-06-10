@@ -216,3 +216,16 @@ export const getTourStats = async (req, res) => {
     });
   }
 };
+
+// CALCULATE THE BUSIEST MONTH OF A GIVEN YEAR
+export const getMonthlyPlan = async (req, res) => {
+  const year = req.params.year * 1;
+  try {
+    const plan = await Tour.aggregate({});
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
+};
