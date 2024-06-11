@@ -1,16 +1,19 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import * as userController from "../controllers/userController.js";
+import * as userController from '../controllers/userController.js';
+import { signup } from '../controllers/authController.js';
 
 const router = Router();
 
+router.post('/signup', signup);
+
 router
-  .route("/")
+  .route('/')
   .get(userController.getAllUsers)
   .post(userController.createUser);
 
 router
-  .route("/:id")
+  .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
