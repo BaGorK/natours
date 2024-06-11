@@ -11,7 +11,15 @@ try {
   app.listen(PORT, () =>
     console.log(`DB connected & App running on port ${PORT}...`)
   );
-} catch (error) {
+} catch (err) {
   console.log('Something went wrong');
+  console.log(err.name, err.message);
   process.exit(1);
 }
+
+// unhandled promise rejections for asynchronous code
+process.on('unhandledRejection', (err) => {
+  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
