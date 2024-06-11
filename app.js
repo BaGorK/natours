@@ -8,6 +8,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import AppError from './utils/appError.js';
+import globalErrorHandlerMiddleWare from './controllers/errorController.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -44,14 +45,6 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(globalErrorHandlerMiddleWare);
 
 export default app;
