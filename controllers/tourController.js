@@ -221,7 +221,49 @@ export const getTourStats = async (req, res) => {
 export const getMonthlyPlan = async (req, res) => {
   const year = req.params.year * 1;
   try {
-    const plan = await Tour.aggregate({});
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates', // this will create three the forest Hiker. if we have an array of 3 startDates, we will have 3 the forest hiker for each date. we have 9 docs, so now we will have 27 docs in the pipeline
+      },
+      {
+        $match: {
+          startDates: {
+            // to get the first day of the year and last day of the year
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' }, // we group by month
+          numTourStarts: { $sum: 1 }, // to get the num of tours in that month
+          tours: { $push: '$name' }, // this will create  an array of tour names ["The Forest Hiker","The Sea Explorer","The Sports Lover"]
+        },
+      },
+      {
+        $addFields: { month: '$_id' }, // to add a new field called month
+      },
+      {
+        $project: {
+          _id: 0, // to hide the _id field
+        },
+      },
+      {
+        $sort: { numTourStarts: -1 }, // to sort by month
+      },
+      {
+        $limit: 12, // to limit the result to 12
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: {
+        plan,
+      },
+    });
   } catch (error) {
     res.status(404).json({
       status: 'fail',
