@@ -30,8 +30,14 @@ const sendErrorProd = (err, res) => {
   }
 };
 
-const handleCastError = (err) => {
+const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
+const handleDuplicateFieldsDB = (err) => {
+  const value = err.errorResponse.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 };
 
@@ -43,12 +49,15 @@ const globalErrorHandlerMiddleWare = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = JSON.parse(JSON.stringify(err));
-    // let error = { ...err };
-    // error.message = err.message;
+    error.message = err.message;
 
     // Invalid object id
     if (error.name === 'CastError') {
-      error = handleCastError(error);
+      error = handleCastErrorDB(error);
+    }
+
+    if (error.code === 11000) {
+      error = handleDuplicateFieldsDB(error);
     }
 
     sendErrorProd(error, res);
