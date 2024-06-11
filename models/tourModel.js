@@ -85,8 +85,34 @@ tourSchema.pre('save', function (next) {
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
-  next()
-})
+  next();
+});
+
+tourSchema.pre('aggregate', function (next) {
+  /*
+    console.log(this.pipeline());
+    // result
+    [
+      { '$match': { ratingsAverage: [Object] } },
+      {
+        '$group': {
+          _id: '$difficulty',
+          numTours: [Object],
+          numRatings: [Object],
+          avgRating: [Object],
+          avgPrice: [Object],
+          minPrice: [Object],
+          maxPrice: [Object]
+        }
+      },
+      { '$sort': { avgPrice: 1 } }
+    ]
+   */
+
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // unshift add that match object to the beginning of the array
+
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
