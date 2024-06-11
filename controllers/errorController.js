@@ -35,6 +35,13 @@ const handleCastErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors);
+  const message = errors.map((el) => el.message).join('. ');
+
+  return new AppError(message, 400);
+};
+
 const handleDuplicateFieldsDB = (err) => {
   const value = err.errorResponse.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Duplicate field value: ${value}. Please use another value!`;
@@ -58,6 +65,10 @@ const globalErrorHandlerMiddleWare = (err, req, res, next) => {
 
     if (error.code === 11000) {
       error = handleDuplicateFieldsDB(error);
+    }
+
+    if (error.name === 'ValidationError') {
+      error = handleValidationErrorDB(error);
     }
 
     sendErrorProd(error, res);
