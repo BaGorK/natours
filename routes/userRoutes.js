@@ -1,16 +1,16 @@
 import { Router } from 'express';
 
 import * as userController from '../controllers/userController.js';
-import { login, signup } from '../controllers/authController.js';
+import * as authMiddleware from '../controllers/authController.js';
 
 const router = Router();
 
-router.post('/signup', signup);
-router.post('/login', login);
+router.post('/signup', authMiddleware.signup);
+router.post('/login', authMiddleware.login);
 
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(authMiddleware.protect, userController.getAllUsers)
   .post(userController.createUser);
 
 router

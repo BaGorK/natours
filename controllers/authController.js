@@ -43,3 +43,8 @@ export const login = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+export const protect = catchAsync(async (req, res, next) => {
+  console.log('protect middleware')
+  next()
+})
