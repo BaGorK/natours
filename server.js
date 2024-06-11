@@ -1,8 +1,8 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
-import app from "./app.js";
-import mongoose from "mongoose";
+import app from './app.js';
+import mongoose from 'mongoose';
 
 const PORT = process.env.PORT || 3000;
 
@@ -12,6 +12,6 @@ try {
     console.log(`DB connected & App running on port ${PORT}...`)
   );
 } catch (error) {
-  console.log("Something went wrong");
+  console.log('Something went wrong');
   process.exit(1);
 }
