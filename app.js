@@ -7,6 +7,7 @@ import tourRouter from './routes/tourRoutes.js';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import AppError from './utils/appError.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -34,11 +35,13 @@ app.all('*', (req, res, next) => {
   //   message: `Can't find ${req.originalUrl} on this server!`
   // })
 
-  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
-  err.status = 'fail';
-  err.statusCode = 404;
+  // const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  // err.status = 'fail';
+  // err.statusCode = 404;
 
-  next(err);
+  // next(err);
+
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 app.use((err, req, res, next) => {
