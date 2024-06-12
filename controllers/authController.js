@@ -4,8 +4,8 @@ import catchAsync from '../utils/catchAsync.js';
 import { createJWT, verifyJWT } from '../utils/tokenUtils.js';
 
 export const signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm } = req.body;
-  const newUser = await User.create({ name, email, password, passwordConfirm });
+  const { name, email, password, passwordConfirm, role } = req.body;
+  const newUser = await User.create({ name, email, password, passwordConfirm, role });
 
   const token = createJWT({ id: newUser._id });
 
@@ -85,3 +85,16 @@ export const protect = catchAsync(async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   next();
 });
+
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles ['admin', 'lead-guide']. role='user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };
+};
