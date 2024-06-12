@@ -8,6 +8,9 @@ const router = Router();
 router.post('/signup', authMiddleware.signup);
 router.post('/login', authMiddleware.login);
 
+router.post('/forgotPassword', authMiddleware.forgotPassword);
+router.patch('/resetPassword/:token', authMiddleware.resetPassword);
+
 router
   .route('/')
   .get(authMiddleware.protect, userController.getAllUsers)

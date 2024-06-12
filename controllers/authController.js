@@ -5,7 +5,13 @@ import { createJWT, verifyJWT } from '../utils/tokenUtils.js';
 
 export const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm, role } = req.body;
-  const newUser = await User.create({ name, email, password, passwordConfirm, role });
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    passwordConfirm,
+    role,
+  });
 
   const token = createJWT({ id: newUser._id });
 
@@ -98,3 +104,16 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+
+export const forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  // 2) Generate the random reset token
+  // 3) Send it to user's email
+});
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on the token
+  // 2) If token has not expired, and there is user, set the new password
+  // 3) Update changedPasswordAt property for the user
+  // 4) Log the user in, send JWT
+});
