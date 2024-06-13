@@ -176,9 +176,8 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
 
+  // 3) Update changedPasswordAt property for the user and save the doc
   await user.save();
-
-  // 3) Update changedPasswordAt property for the user
 
   // 4) Log the user in, send JWT
   const token = createJWT({ id: user._id });
