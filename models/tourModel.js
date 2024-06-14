@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
-import User from './userModel.js'
+// import User from './userModel.js';
 
 const tourSchema = new mongoose.Schema(
   {
@@ -102,8 +102,14 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    // Modeling Tour Guides Embedding | an array of user id
-    guides: Array,
+    // Modeling Tour Guides Embedding
+    // guides: Array,
+
+    // Modeling Tour Guides Referencing | an array of user id
+    guides: [{ 
+      type: mongoose.Schema.ObjectId, 
+      ref: 'User'
+     }],
   },
   {
     toJSON: { virtuals: true },
@@ -123,11 +129,11 @@ tourSchema.pre('save', function (next) {
 });
 
 // Modeling Tour Guides Embedding
-tourSchema.pre('save', async function (next) {
-  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
-  next;
-});
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next;
+// });
 
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
