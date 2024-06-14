@@ -1,12 +1,14 @@
 import express from 'express';
 import morgan from 'morgan';
-
-import userRouter from './routes/userRoutes.js';
-import tourRouter from './routes/tourRoutes.js';
+import rateLimit from 'express-rate-limit';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import path from 'path';
+
+import userRouter from './routes/userRoutes.js';
+import tourRouter from './routes/tourRoutes.js';
+
 import AppError from './utils/appError.js';
 import globalErrorHandlerMiddleWare from './controllers/errorController.js';
 
@@ -17,6 +19,15 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+app.use(
+  '/api',
+  rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour',
+  })
+);
 
 app.use(express.json());
 app.use(express.static(path.resolve(__dirname, `/public`)));
