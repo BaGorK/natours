@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
+import User from './userModel.js'
 
 const tourSchema = new mongoose.Schema(
   {
@@ -101,6 +102,8 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    // Modeling Tour Guides Embedding | an array of user id
+    guides: Array,
   },
   {
     toJSON: { virtuals: true },
@@ -119,10 +122,12 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-// tourSchema.post('save', function(doc, next) {
-//   console.log(doc);
-//   next()
-// })
+// Modeling Tour Guides Embedding
+tourSchema.pre('save', async function (next) {
+  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
+  next;
+});
 
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
