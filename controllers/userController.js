@@ -64,12 +64,12 @@ export const deleteMe = catchAsync(async (req, res, next) => {
 });
 
 export const createUser = async (req, res) => {
-  res.status(200).json({ message: 'Create user' });
+  res.status(200).json({
+    status: 'error',
+    message: 'This route is not defined! Please use /signup instead',
+  });
 };
-export const getUser = async (req, res) => {
-  res.status(200).json({ message: 'Get user' });
-};
-
+export const getUser = factory.getOne(User);
 // DO NOT update passwords with this.
 export const updateUser = factory.updateOne(User);
 export const deleteUser = factory.deleteOne(User);

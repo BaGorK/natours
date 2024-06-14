@@ -27,6 +27,6 @@ router
   .route('/:id')
   .patch(reviewController.updateReview)
   .delete(reviewController.deleteReview)
-// .get(reviewController.getReview);
+  .get(reviewController.getReview);
 
 export default router;

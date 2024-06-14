@@ -28,3 +28,4 @@ export const setTourUserIds = (req, res, next) => {
 export const createReview = factory.createOne(Review)
 export const updateReview = factory.updateOne(Review);
 export const deleteReview = factory.deleteOne(Review);
+export const getReview = factory.getOne(Review)
