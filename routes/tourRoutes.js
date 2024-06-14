@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as tourController from '../controllers/tourController.js';
 import * as authController from '../controllers/authController.js';
+import * as reviewController from '../controllers/reviewController.js';
 
 const router = Router();
 
@@ -24,6 +25,19 @@ router
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour
+  );
+
+// Nested Routes
+// POST /tour/tourId/review // creates a review on the tour
+// GET /tour/tourId/review // gets all the reviews of that tour
+// GET /tour/tourId/review/reviewId // gets single review of that tour
+
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReview
   );
 
 export default router;
