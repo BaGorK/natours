@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -16,10 +17,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// 1) GLOBAL MIDDLEWARES
+// Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Security HTTP headers
+app.use(helmet());
+
+// Limit requests from same API
 app.use(
   '/api',
   rateLimit({
@@ -29,21 +36,27 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+
+// Serving static files
 app.use(express.static(path.resolve(__dirname, `/public`)));
 
+// Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
   next();
 });
 
+// Test route
 app.get('/api/v1/test', (req, res) => {
   return res
     .status(200)
     .json({ message: 'Hello from the server side', app: 'Natours' });
 });
 
+// 3) ROUTES
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 
