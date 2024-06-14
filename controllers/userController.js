@@ -39,7 +39,7 @@ export const updateMe = catchAsync(async (req, res, next) => {
   const filteredBody = filterObj(req.body, 'name', 'email');
 
   // 3) Update user document
-  const updatedUser = await User.findByIdAndUpdate(req.user, filteredBody, {
+  const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
     new: true,
     runValidators: true,
   });
@@ -50,6 +50,15 @@ export const updateMe = catchAsync(async (req, res, next) => {
     data: {
       user: updatedUser,
     },
+  });
+});
+
+export const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'user deleted successfully',
   });
 });
 
