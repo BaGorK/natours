@@ -1,25 +1,27 @@
 import { Router } from 'express';
 
 import * as userController from '../controllers/userController.js';
-import * as authMiddleware from '../controllers/authController.js';
+import * as authController from '../controllers/authController.js';
 
 const router = Router();
 
-router.post('/signup', authMiddleware.signup);
-router.post('/login', authMiddleware.login);
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
-router.post('/forgotPassword', authMiddleware.forgotPassword);
-router.patch('/resetPassword/:token', authMiddleware.resetPassword);
+router.post('/forgotPassword', authController.forgotPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
 router.patch(
   '/updateMyPassword',
-  authMiddleware.protect,
-  authMiddleware.updatePassword
+  authController.protect,
+  authController.updatePassword
 );
+
+router.patch('/updateMe', authController.protect, userController.updateMe);
 
 router
   .route('/')
-  .get(authMiddleware.protect, userController.getAllUsers)
+  .get(authController.protect, userController.getAllUsers)
   .post(userController.createUser);
 
 router
