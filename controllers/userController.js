@@ -1,6 +1,7 @@
 import User from '../models/userModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -73,6 +74,4 @@ export const updateUser = async (req, res) => {
   res.status(200).json({ message: 'Update user' });
 };
 
-export const deleteUser = async (req, res) => {
-  res.status(200).json({ message: 'Delete user' });
-};
+export const deleteUser = factory.deleteOne(User);
