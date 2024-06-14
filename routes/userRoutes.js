@@ -11,6 +11,12 @@ router.post('/login', authMiddleware.login);
 router.post('/forgotPassword', authMiddleware.forgotPassword);
 router.patch('/resetPassword/:token', authMiddleware.resetPassword);
 
+router.patch(
+  '/updateMyPassword',
+  authMiddleware.protect,
+  authMiddleware.updatePassword
+);
+
 router
   .route('/')
   .get(authMiddleware.protect, userController.getAllUsers)
