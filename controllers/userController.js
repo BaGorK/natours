@@ -70,5 +70,6 @@ export const getUser = async (req, res) => {
   res.status(200).json({ message: 'Get user' });
 };
 
+// DO NOT update passwords with this.
 export const updateUser = factory.updateOne(User);
 export const deleteUser = factory.deleteOne(User);
