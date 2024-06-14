@@ -70,8 +70,5 @@ export const getUser = async (req, res) => {
   res.status(200).json({ message: 'Get user' });
 };
 
-export const updateUser = async (req, res) => {
-  res.status(200).json({ message: 'Update user' });
-};
-
+export const updateUser = factory.updateOne(User);
 export const deleteUser = factory.deleteOne(User);

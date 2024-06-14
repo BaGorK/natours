@@ -33,4 +33,5 @@ export const createReview = catchAsync(async (req, res, next) => {
   });
 });
 
+export const updateReview = factory.updateOne(Review)
 export const deleteReview = factory.deleteOne(Review);
