@@ -6,6 +6,15 @@ import catchAsync from '../utils/catchAsync.js';
 import sendEmail from '../utils/email.js';
 import { createJWT, verifyJWT } from '../utils/tokenUtils.js';
 
+const sendCookie = (res, token) =>
+  res.cookie('jwt', token, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  });
+
 export const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm, role } = req.body;
   const newUser = await User.create({
@@ -17,6 +26,10 @@ export const signup = catchAsync(async (req, res, next) => {
   });
 
   const token = createJWT({ id: newUser._id });
+  sendCookie(res, token);
+
+  // remove the password from the output
+  newUser.password = undefined;
 
   res.status(201).json({
     status: 'success',
@@ -47,6 +60,9 @@ export const login = catchAsync(async (req, res, next) => {
 
   // 3) If everything ok, send token to client
   const token = createJWT({ id: user._id });
+  sendCookie(res, token);
+
+  sendCookie(res, token);
 
   res.status(200).json({
     status: 'success',
@@ -183,6 +199,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
 
   // 4) Log the user in, send JWT
   const token = createJWT({ id: user._id });
+  sendCookie(res, token);
 
   res.status(200).json({
     status: 'success',
@@ -223,6 +240,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   // 5) Log user in, send JWT
   const token = createJWT({ id: user._id });
+  sendCookie(res, token);
 
   res.status(200).json({
     status: 'success',
