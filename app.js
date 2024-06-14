@@ -12,6 +12,7 @@ import path from 'path';
 
 import userRouter from './routes/userRoutes.js';
 import tourRouter from './routes/tourRoutes.js';
+import reviewRouter from './routes/reviewRoutes.js';
 
 import AppError from './utils/appError.js';
 import globalErrorHandlerMiddleWare from './controllers/errorController.js';
@@ -88,6 +89,7 @@ app.get('/api/v1/test', (req, res) => {
 // 3) ROUTES
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   // res.status(404).json({
