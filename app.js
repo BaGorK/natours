@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
+import hpp from 'hpp';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -46,6 +47,26 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS
 app.use(xss());
+
+// Prevent parameter pollution
+// Note:
+// if req is /tours?sort=duration&sort=price
+// if console.log(req.query.sort) it will be an array like ['duration', 'price'] --- this attack is called parameter pollution
+// after using hpp() the last value will be used
+
+// we want to req is /tours?duration=5&duration=9 fetch tours with duration 5 and 9
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 // Serving static files
 app.use(express.static(path.resolve(__dirname, `/public`)));
