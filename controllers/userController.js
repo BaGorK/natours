@@ -13,18 +13,6 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
-
 export const updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -69,6 +57,8 @@ export const createUser = async (req, res) => {
     message: 'This route is not defined! Please use /signup instead',
   });
 };
+
+export const getAllUsers = factory.getAll(User);
 export const getUser = factory.getOne(User);
 // DO NOT update passwords with this.
 export const updateUser = factory.updateOne(User);
