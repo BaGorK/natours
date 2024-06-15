@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Tour from './tourModel.js';
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -63,7 +64,10 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
     },
   ]);
 
-  console.log(stats);
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsAverage: stats[0].avgRating || 4.5,
+    ratingsQuantity: stats[0].nRating || 0,
+  });
 };
 
 reviewSchema.post('save', function () {
