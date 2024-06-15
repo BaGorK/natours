@@ -52,6 +52,14 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// DOCUMENT MIDDLEWARES
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -66,6 +74,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// QUERY MIDDLEWARE
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+// INSTANCE METHOD
 userSchema.methods.isCorrectPassword = async function (pass, hashedPass) {
   return await bcrypt.compare(pass, hashedPass);
 };
@@ -94,19 +110,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
-
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
-
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
-
-userSchema.pre(/^find/, function (next) {
-  // this points to the current query
-  this.find({ active: { $ne: false } });
-  next();
-});
 
 const User = mongoose.model('User', userSchema);
 
