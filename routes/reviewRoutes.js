@@ -9,10 +9,11 @@ const router = express.Router({ mergeParams: true });
 // POST /tours/:tourId/reviews
 // POST /reviews   --- they both handled in the same route
 
+router.use(authController.protect);
+
 router
   .route('/')
   .get(
-    // authController.protect,
     // authController.restrictTo('admin'),
     reviewController.getAllReviews
   )
@@ -25,8 +26,14 @@ router
 
 router
   .route('/:id')
-  .patch(reviewController.updateReview)
-  .delete(reviewController.deleteReview)
-  .get(reviewController.getReview);
+  .get(reviewController.getReview)
+  .patch(
+    authController.restrictTo('user', 'admin'),
+    reviewController.updateReview
+  )
+  .delete(
+    authController.restrictTo('user', 'admin'),
+    reviewController.deleteReview
+  )
 
 export default router;
