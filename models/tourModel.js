@@ -119,13 +119,18 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // NOTE: we cannot use this durationWeeks in a query, because virtual properties technically are not part of the database
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
 // virtual populate
-tourSchema.virtual('reviews', { // reviews is the name of the field
+tourSchema.virtual('reviews', {
+  // reviews is the name of the field
   ref: 'Review', // the model we want to reference
   foreignField: 'tour', // the field in the Review model
   localField: '_id', // the field in the current model
