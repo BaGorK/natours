@@ -95,6 +95,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return JWTTimestamp < changedTimestamp;
   }
 
+  // This means password is not changed so that the token is valid token
   return false;
 };
 

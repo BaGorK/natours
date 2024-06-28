@@ -74,10 +74,7 @@ export const login = catchAsync(async (req, res, next) => {
 export const protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization?.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
@@ -87,7 +84,9 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 2) Verification token
+  // 2) Verification token -- there are two issues to consider.
+  // 2.1) Check if the token is a valid token --> handle JWTError
+  // 2.2) Check if the token is not expired --> handle JWTExpiredError
   const decoded = verifyJWT(token);
 
   // 3) Check if user still exists
@@ -100,6 +99,7 @@ export const protect = catchAsync(async (req, res, next) => {
   }
 
   // 4) Check if user changed password after the token was issued
+  // case: if malicious user gets access to the users token and the user changes his password to defend himself, we need to check if the password is changed after the token is signed
   const isChangedPasswordAfter = currentUser.changedPasswordAfter(decoded.iat);
   if (isChangedPasswordAfter) {
     return next(
@@ -153,7 +153,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
       email: user.email,
       subject: 'Your password reset token (valid for 10 min)',
       message,
-      html: `<h1>Forgot your password?</h1><p>Submit a PATCH request with your new password and passwordConfirm to: <a href="${resetURL}">${resetURL}</a></p>`,
+      html: `<h1>Forgot your password?</h1><p>Submit a PATCH request with your new password and passwordConfirm to: <a href="${resetURL}" target='_blank'>${resetURL}</a></p>`,
     });
   } catch (error) {
     user.passwordResetToken = undefined;
