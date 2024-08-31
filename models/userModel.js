@@ -3,6 +3,7 @@ import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
+//- CREATE A MONGOOSE USER SCHEMA
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -53,6 +54,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // DOCUMENT MIDDLEWARES
+// UPDATE THE PASSWORD CHANGED AT PROP
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
@@ -60,6 +62,7 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+// HASH THE PASSWORD
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -75,6 +78,7 @@ userSchema.pre('save', async function (next) {
 });
 
 // QUERY MIDDLEWARE
+// HIDE NOT ACTIVE USERS / DELETED USERS
 userSchema.pre(/^find/, function (next) {
   // this points to the current query
   this.find({ active: { $ne: false } });
@@ -82,10 +86,12 @@ userSchema.pre(/^find/, function (next) {
 });
 
 // INSTANCE METHOD
+//- COMPARE TOKENS
 userSchema.methods.isCorrectPassword = async function (pass, hashedPass) {
   return await bcrypt.compare(pass, hashedPass);
 };
 
+//- CHECK PASSWORD CHANGED AFTER THE TOKEN IS SIGNED
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
@@ -99,6 +105,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
+//- CREATE PASSWORD RESET TOKEN
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
@@ -112,6 +119,7 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
+//- CREATE A MONGOOSE USER MODEL
 const User = mongoose.model('User', userSchema);
 
 export default User;

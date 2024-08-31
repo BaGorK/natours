@@ -10,6 +10,10 @@ export const deleteOne = (Model) =>
       return next(new AppError('No document found with that ID', 404));
     }
 
+    if (doc.rating) {
+      await Model.constructor.calcAverageRatings(doc.tour);
+    }
+
     res.status(204).json({
       status: 'success',
       data: null,
@@ -27,6 +31,10 @@ export const updateOne = (Model) =>
       return next(new AppError('No document found with that ID', 404));
     }
 
+    if (doc.rating) {
+      await Model.constructor.calcAverageRatings(doc.tour);
+    }
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -38,6 +46,10 @@ export const updateOne = (Model) =>
 export const createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
+
+    if (doc.rating) {
+      await Model.calcAverageRatings(doc.tour); // Review => this.constructor
+    }
 
     res.status(200).json({
       status: 'success',
