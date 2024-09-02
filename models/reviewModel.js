@@ -50,6 +50,8 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
   const stats = await this.aggregate([
     {
@@ -70,11 +72,12 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   });
 };
 
-reviewSchema.post(/^findOneAnd/, async function () {
-  // await this.findOne(); does NOT work here, query has already executed
-  await this.r.constructor.calcAverageRatings(this.r.tour);
-});
-
 const Review = mongoose.model('Review', reviewSchema);
+
+Review.on('index', function (error) {
+  if (error) {
+    console.error('Index creation failed on review model:', error);
+  }
+});
 
 export default Review;

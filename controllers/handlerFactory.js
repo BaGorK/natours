@@ -11,7 +11,7 @@ export const deleteOne = (Model) =>
     }
 
     if (doc.rating) {
-      await Model.constructor.calcAverageRatings(doc.tour);
+      await Model.calcAverageRatings(doc.tour);
     }
 
     res.status(204).json({
@@ -32,7 +32,7 @@ export const updateOne = (Model) =>
     }
 
     if (doc.rating) {
-      await Model.constructor.calcAverageRatings(doc.tour);
+      await Model.calcAverageRatings(doc.tour);
     }
 
     res.status(200).json({
