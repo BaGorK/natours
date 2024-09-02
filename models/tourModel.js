@@ -166,7 +166,7 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.pre('aggregate', function (next) {
+tourSchema.post('aggregate', function () {
   /*
     console.log(this.pipeline());
     // result
@@ -188,8 +188,6 @@ tourSchema.pre('aggregate', function (next) {
    */
 
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // unshift add that match object to the beginning of the array
-
-  next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
