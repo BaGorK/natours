@@ -1,2 +1,10 @@
 node_modules/
 *.env
+.cache
+dist/
+coverage/
+.vscode/
+.idea/
+*.log
+*.log.*
+*.log-*

@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -46,12 +48,15 @@ app.use(
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
 // Data sanitization against XSS
 app.use(xss());
+
+app.use(cors());
 
 // Prevent parameter pollution
 // Note:
@@ -80,6 +85,7 @@ app.use(express.static(path.join(__dirname, `/public`)));
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
+  // console.log(req.cookies);
   next();
 });
 
