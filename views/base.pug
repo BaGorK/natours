@@ -1,12 +1,20 @@
-doctype html 
+doctype html
 html
   head
-    title Natours
-    link(rel='stylesheet' href='css/style.css')
-    link(rel='icon' type='image/png' href='img/favicon.png')
+    block head
+      meta(charset='UTF-8')
+      meta(name='viewport' content='width=device-width, initial-scale=1.0')
+      link(rel='stylesheet' href='/css/style.css')
+      link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
+      link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+      title Natours | #{title}
 
   body
-    //- block content
-    h1 The Park Camper
-    p This is just some text
-    //- img(src="img/favicon.png", alt="", height="100px", width="100px") 
+    // This is the header
+    include _header
+
+    // content
+    block content
+
+    // footer
+    include _footer
