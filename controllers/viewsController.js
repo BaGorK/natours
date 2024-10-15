@@ -64,6 +64,12 @@ const getTour = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAccount = (req, res) => {
+  res.status(200).render('account', {
+    title: 'Your account',
+  });
+};
+
 const getLoginForm = (req, res) => {
   res.status(200).render('login', {
     title: 'Log into your account',
@@ -75,4 +81,5 @@ export const viewsController = {
   getTour,
   getLoginForm,
   isLoggedIn,
+  getAccount,
 };
