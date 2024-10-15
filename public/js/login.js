@@ -23,8 +23,13 @@ export const login = async (email, password) => {
 
 export const logout = async () => {
   try {
-    const res = await axios('/api/v1/users/logout')
-    if ((res.data.status = 'success')) location.reload(true);
+    const res = await axios('/api/v1/users/logout');
+    if ((res.data.status = 'success')) {
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 0);
+      location.reload(true);
+    }
   } catch (err) {
     console.log(err.response);
     showAlert('error', 'Error logging out! Try again.');
