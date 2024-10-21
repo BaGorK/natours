@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import User from '../models/userModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
-import sendEmail from '../utils/email.js';
+import { Email } from '../utils/email.js';
 import { createJWT, verifyJWT } from '../utils/tokenUtils.js';
 
 const sendCookie = (res, token) =>
@@ -24,6 +24,9 @@ export const signup = catchAsync(async (req, res, next) => {
     passwordConfirm,
     role,
   });
+
+  const url = `${process.env.BASE_URL}/me`;
+  await new Email(newUser, url).sendWelcome();
 
   const token = createJWT({ id: newUser._id });
   sendCookie(res, token);
@@ -159,12 +162,12 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      message,
-      html: `<h1>Forgot your password?</h1><p>Submit a PATCH request with your new password and passwordConfirm to: <a href="${resetURL}" target='_blank'>${resetURL}</a></p>`,
-    });
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: 'Your password reset token (valid for 10 min)',
+    //   message,
+    //   html: `<h1>Forgot your password?</h1><p>Submit a PATCH request with your new password and passwordConfirm to: <a href="${resetURL}" target='_blank'>${resetURL}</a></p>`,
+    // });
   } catch (error) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
