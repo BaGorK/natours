@@ -1,7 +1,42 @@
+import multer from 'multer';
 import User from '../models/userModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from './handlerFactory.js';
+
+/*
+{
+  fieldname: 'photo',
+  originalname: 'user.jpg',
+  encoding: '7bit',
+  mimetype: 'image/jpeg',
+  destination: 'public/img/upload',
+  filename: '5941739550b8de458e686c63945c8f29',
+  path: 'public/img/upload/5941739550b8de458e686c63945c8f29',
+  size: 18373
+}
+*/
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'public/img/upload');
+    },
+    filename: (req, file, cb) => {
+      const ext = file.mimetype.split('/')[1];
+      cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image')) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Not an image! Please upload only images.', 400), false);
+    }
+  },
+});
+
+export const uploadUserPhoto = upload.single('photo');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -32,6 +67,10 @@ export const updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
+
+  if (req.file) {
+    filteredBody.photo = req.file.filename;
+  }
 
   // 3) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
