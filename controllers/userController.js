@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from './handlerFactory.js';
+import sharp from 'sharp';
 
 /*
 {
@@ -15,18 +16,22 @@ import * as factory from './handlerFactory.js';
   path: 'public/img/upload/5941739550b8de458e686c63945c8f29',
   size: 18373
 }
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/upload');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
 */
 
+const multerStorage = multer.memoryStorage();
+
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'public/img/upload');
-    },
-    filename: (req, file, cb) => {
-      const ext = file.mimetype.split('/')[1];
-      cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-    },
-  }),
+  storage: multerStorage,
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image')) {
       cb(null, true);
@@ -37,6 +42,20 @@ const upload = multer({
 });
 
 export const uploadUserPhoto = upload.single('photo');
+
+export const resizeUserPhoto = async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+};
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
