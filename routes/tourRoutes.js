@@ -34,7 +34,9 @@ router
   );
 
 router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
-router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(tourController.getToursWithin);
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
 
 router
   .route('/')
@@ -51,6 +53,8 @@ router
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
+    tourController.uploadTourImages,
+    tourController.resizeTourImages,
     tourController.updateTour
   )
   .delete(

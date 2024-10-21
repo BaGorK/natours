@@ -1,7 +1,30 @@
+import multer from 'multer';
 import Tour from '../models/tourModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from './handlerFactory.js';
+
+const multerStorage = multer.memoryStorage();
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image')) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Not an image! Please upload only images.', 400), false);
+    }
+  },
+});
+
+export const uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+export const resizeTourImages = async (req, res, next) => {
+  next();
+};
 
 export const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -145,7 +168,6 @@ export const getToursWithin = catchAsync(async (req, res, next) => {
     },
   });
 });
-
 
 export const getDistances = catchAsync(async (req, res, next) => {
   const { latlng, unit } = req.params;
