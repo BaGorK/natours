@@ -3,6 +3,7 @@ import Tour from '../models/tourModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from './handlerFactory.js';
+import sharp from 'sharp';
 
 const multerStorage = multer.memoryStorage();
 
@@ -22,9 +23,35 @@ export const uploadTourImages = upload.fields([
   { name: 'images', maxCount: 3 },
 ]);
 
-export const resizeTourImages = async (req, res, next) => {
+export const resizeTourImages = catchAsync(async (req, res, next) => {
+  const { imageCover, images } = req.files;
+  if (!imageCover.length || !images.length``) return next();
+
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  req.body.images = [];
+
+  await Promise.all(
+    Array.from(images).map(async (file, i) => {
+      const imageFilename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${imageFilename}`);
+
+      req.body.images.push(imageFilename);
+    })
+  );
+
   next();
-};
+});
 
 export const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
