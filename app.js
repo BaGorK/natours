@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Security HTTP headers
-app.use(helmet());
+// app.use(helmet());
 
 // Limit requests from same API
 app.use(
@@ -80,7 +80,7 @@ app.use(
 );
 
 // Serving static files
-app.use(express.static(path.join(__dirname, `/public`)));
+app.use(express.static(path.resolve(__dirname, `./public`)));
 
 // Test middleware
 app.use((req, res, next) => {
