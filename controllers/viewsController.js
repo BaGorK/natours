@@ -4,6 +4,7 @@ import Tour from '../models/tourModel.js';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import Booking from '../models/bookingModel.js';
 
 // Only for rendered pages, no errors!
 const isLoggedIn = async (req, res, next) => {
@@ -64,6 +65,18 @@ const getTour = catchAsync(async (req, res, next) => {
   });
 });
 
+const getMyTours = catchAsync(async (req, res, next) => {
+  const bookings = await Booking.find({ user: req.user.id });
+  const tourIds = bookings.map((el) => el.tour);
+
+  const tours = await Tour.find({ _id: { $in: tourIds } });
+
+  return res.status(200).render('overview', {
+    title: 'My Tours',
+    tours,
+  });
+});
+
 const getAccount = (req, res) => {
   res.status(200).render('account', {
     title: 'Your account',
@@ -82,4 +95,5 @@ export const viewsController = {
   getLoginForm,
   isLoggedIn,
   getAccount,
+  getMyTours,
 };
