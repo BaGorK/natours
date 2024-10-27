@@ -1,4 +1,5 @@
 import Tour from '../models/tourModel.js';
+import Booking from '../models/bookingModel.js';
 // import AppError from '../utils/appError.js';
 // import * as factory from './handlerFactory.js';
 import catchAsync from '../utils/catchAsync.js';
@@ -14,7 +15,7 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
   ).checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'payment',
-    success_url: `${process.env.BASE_URL}`,
+    success_url: `${process.env.BASE_URL}/?tour=${req.params.tourId}&user=${req.user.id}&price=${tour.price}`,
     cancel_url: `${process.env.BASE_URL}/tour/${tour.slug}`,
     customer_email: req.user.email,
     client_reference_id: req.params.tourId,
@@ -42,4 +43,14 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
     status: 'success',
     session,
   });
+});
+
+export const createBookingCheckout = catchAsync(async (req, res, next) => {
+  const { tour, user, price } = req.query;
+
+  if (!tour || !user || !price) return next();
+  await Booking.create({ tour, user, price });
+
+  res.redirect(req.originalUrl.split('?')[0]);
+  next();
 });
