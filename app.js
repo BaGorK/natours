@@ -1,12 +1,13 @@
 import express from 'express';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import helmet from 'helmet';
+// import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -56,7 +57,7 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS
 app.use(xss());
-
+app.use(compression());
 app.use(cors());
 
 // Prevent parameter pollution
