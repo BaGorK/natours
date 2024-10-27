@@ -1,7 +1,7 @@
 import Tour from '../models/tourModel.js';
 import Booking from '../models/bookingModel.js';
 // import AppError from '../utils/appError.js';
-// import * as factory from './handlerFactory.js';
+import * as factory from './handlerFactory.js';
 import catchAsync from '../utils/catchAsync.js';
 import stripe from 'stripe';
 
@@ -54,3 +54,9 @@ export const createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
   next();
 });
+
+export const createBooking = factory.createOne(Booking);
+export const getBooking = factory.getOne(Booking);
+export const getAllBooking = factory.getAll(Booking);
+export const updateBooking = factory.updateOne(Booking);
+export const deleteBooking = factory.deleteOne(Booking);
